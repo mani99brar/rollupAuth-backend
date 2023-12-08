@@ -4,9 +4,10 @@ import { ActionSchema } from "@stackr/stackr-js";
 
 const actionSchemaType = {
   type: "String",
+  otp:  "Number"
 };
 
-const actionInput = new ActionSchema("update-counter", actionSchemaType);
+const otpInput = new ActionSchema("verify-otp", actionSchemaType);
 
 const getRandomValue = (array: any[]) => {
   return array[Math.floor(Math.random() * array.length)];
@@ -16,12 +17,13 @@ const getData = async () => {
   const wallet = ethers.Wallet.createRandom();
 
   const data = {
-    type: getRandomValue(["increment", "decrement"]),
+    type: "valid",
+    otp: 1
   };
 
   const sign = await wallet.signTypedData(
     stackrConfig.domain,
-    actionInput.EIP712TypedData.types,
+    otpInput.EIP712TypedData.types,
     data
   );
 

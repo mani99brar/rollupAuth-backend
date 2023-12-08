@@ -4,44 +4,45 @@ import { ethers } from "ethers";
 export type StateVariable = number;
 
 interface StateTransport {
-  currentCount: StateVariable;
+  currentOtp: StateVariable;
 }
 
-export interface CounterActionInput {
-  type: "increment" | "decrement";
+export interface OTPActionInput {
+  type: "valid" | "notValid";
+  otp: number;
 }
 
-export class CounterRollup extends RollupState<StateVariable, StateTransport> {
-  constructor(count: StateVariable) {
-    super(count);
+export class OTPRollup extends RollupState<StateVariable, StateTransport> {
+  constructor(initialOtp: StateVariable) {
+    super(initialOtp);
   }
 
   createTransport(state: StateVariable): StateTransport {
-    return { currentCount: state };
+    return { currentOtp: state };
   }
 
   getState(): StateVariable {
-    return this.transport.currentCount;
+    return this.transport.currentOtp;
   }
 
   calculateRoot(): ethers.BytesLike {
     return ethers.solidityPackedKeccak256(
       ["uint256"],
-      [this.transport.currentCount]
+      [this.transport.currentOtp]
     );
   }
 }
 
-export const counterSTF: STF<CounterRollup, CounterActionInput> = {
-  identifier: "counterSTF",
+export const otpSTF: STF<OTPRollup, OTPActionInput> = {
+  identifier: "otpSTF",
 
-  apply(inputs: CounterActionInput, state: CounterRollup): void {
+  apply(inputs: OTPActionInput, state: OTPRollup): void {
     let newState = state.getState();
-    if (inputs.type === "increment") {
-      newState += 1;
-    } else if (inputs.type === "decrement") {
-      throw new Error("Not implemented");
+    if (inputs.otp === newState) {
+      newState *=2;
+    } else if (inputs.otp!== newState) {
+      throw new Error("Incorrect");
     }
-    state.transport.currentCount = newState;
+    state.transport.currentOtp = newState;
   },
 };
