@@ -23,7 +23,7 @@ const stackrConfig: StackrConfig = {
     accounts: [
       {
         privateKey:
-          "PRIVATE_KEY",
+          "724aeb4d0a184e543c936f407572c0e327b234a5d26f7a83a35074c653262211",
         purpose: KeyPurpose.BATCH,
         scheme: SignatureScheme.ECDSA,
       },

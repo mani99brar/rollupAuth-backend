@@ -4,10 +4,12 @@ import { ActionSchema } from "@stackr/stackr-js";
 
 const actionSchemaType = {
   type: "String",
-  otp:  "Number"
+  otp:  "uint256"
 };
 
 const otpInput = new ActionSchema("verify-otp", actionSchemaType);
+
+console.log(otpInput.EIP712TypedData.types)
 
 const getRandomValue = (array: any[]) => {
   return array[Math.floor(Math.random() * array.length)];
@@ -18,8 +20,12 @@ const getData = async () => {
 
   const data = {
     type: "valid",
-    otp: 1
+    otp: 733120692707
   };
+
+  console.log("Stackr config: ", stackrConfig);
+  console.log("OTP input: ", otpInput.EIP712TypedData.types);
+  console.log("Data: ", data);
 
   const sign = await wallet.signTypedData(
     stackrConfig.domain,
@@ -32,7 +38,7 @@ const getData = async () => {
     signature: sign,
     payload: data,
   });
-
+  
   console.log(payload);
 
   return payload;

@@ -33,16 +33,33 @@ export class OTPRollup extends RollupState<StateVariable, StateTransport> {
   }
 }
 
+
+
 export const otpSTF: STF<OTPRollup, OTPActionInput> = {
   identifier: "otpSTF",
 
   apply(inputs: OTPActionInput, state: OTPRollup): void {
     let newState = state.getState();
-    if (inputs.otp === newState) {
-      newState *=2;
-    } else if (inputs.otp!== newState) {
+    const now = Date.now();
+    const roundedTimestamp = Math.floor(now / (5 * 60 * 1000)); 
+    let combinedData = newState + "0xFa00D29d378EDC57AA1006946F0fc6230a5E3288" + Math.floor(roundedTimestamp).toString(); // Floor to the last 5 minutes
+
+    // Hash the combined data to generate OTP
+    // const otp = combinedData; // Take first 6 characters
+    const encoder = new TextEncoder();
+    const data = encoder.encode(combinedData);
+
+    const buffer  = ethers.solidityPackedKeccak256(["bytes"],[data]).toString();
+    combinedData = buffer.substring(0, 6);
+    
+
+    if (inputs.otp === parseInt(combinedData)) {
+      // newState *=2;
+      
+    } else{
+      
       throw new Error("Incorrect");
     }
-    state.transport.currentOtp = newState;
+    // state.transport.currentOtp = newState;
   },
 };
